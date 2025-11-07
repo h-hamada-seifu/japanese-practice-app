@@ -148,7 +148,7 @@ export default function RecordPage() {
                 )}
                 <div className="flex items-center gap-2">
                   <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
-                    難易度: {topic.difficulty_level}
+                    レベル: {topic.target_level}
                   </span>
                 </div>
               </div>
