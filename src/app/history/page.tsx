@@ -4,6 +4,9 @@ import { SpeechesRow } from '@/types/database';
 import SpeechList from '@/components/History/SpeechList';
 import Link from 'next/link';
 
+// Force dynamic rendering - this page requires authentication
+export const dynamic = 'force-dynamic';
+
 async function getUserSpeeches(): Promise<SpeechesRow[]> {
   const supabase = createServerClient();
 
