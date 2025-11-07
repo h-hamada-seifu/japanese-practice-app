@@ -32,7 +32,8 @@ export interface Database {
 export interface UsersRow {
   id: string;
   email: string;
-  name: string | null;
+  display_name: string | null;
+  jlpt_level: 'N3' | 'N2' | null;
   created_at: string;
   updated_at: string;
 }
@@ -40,7 +41,8 @@ export interface UsersRow {
 export interface UsersInsert {
   id?: string;
   email: string;
-  name?: string | null;
+  display_name?: string | null;
+  jlpt_level?: 'N3' | 'N2' | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -48,7 +50,8 @@ export interface UsersInsert {
 export interface UsersUpdate {
   id?: string;
   email?: string;
-  name?: string | null;
+  display_name?: string | null;
+  jlpt_level?: 'N3' | 'N2' | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -56,29 +59,38 @@ export interface UsersUpdate {
 // Topics table types
 export interface TopicsRow {
   id: string;
+  category: string;
   title: string;
   description: string | null;
-  difficulty_level: number;
+  hints: string[] | null;
+  target_level: string;
+  display_order: number;
+  is_active: boolean;
   created_at: string;
-  updated_at: string;
 }
 
 export interface TopicsInsert {
   id?: string;
+  category: string;
   title: string;
   description?: string | null;
-  difficulty_level?: number;
+  hints?: string[] | null;
+  target_level?: string;
+  display_order: number;
+  is_active?: boolean;
   created_at?: string;
-  updated_at?: string;
 }
 
 export interface TopicsUpdate {
   id?: string;
+  category?: string;
   title?: string;
   description?: string | null;
-  difficulty_level?: number;
+  hints?: string[] | null;
+  target_level?: string;
+  display_order?: number;
+  is_active?: boolean;
   created_at?: string;
-  updated_at?: string;
 }
 
 // Speeches table types
@@ -86,11 +98,11 @@ export interface SpeechesRow {
   id: string;
   user_id: string;
   topic_id: string;
-  audio_url: string;
-  transcription: string | null;
-  ai_feedback: Json | null;
-  score: number | null;
-  duration_seconds: number;
+  topic_title: string;
+  audio_url: string | null;
+  transcription: string;
+  feedback: Json;
+  duration: number | null;
   created_at: string;
 }
 
@@ -98,11 +110,11 @@ export interface SpeechesInsert {
   id?: string;
   user_id: string;
   topic_id: string;
-  audio_url: string;
-  transcription?: string | null;
-  ai_feedback?: Json | null;
-  score?: number | null;
-  duration_seconds: number;
+  topic_title: string;
+  audio_url?: string | null;
+  transcription: string;
+  feedback: Json;
+  duration?: number | null;
   created_at?: string;
 }
 
@@ -110,10 +122,10 @@ export interface SpeechesUpdate {
   id?: string;
   user_id?: string;
   topic_id?: string;
-  audio_url?: string;
-  transcription?: string | null;
-  ai_feedback?: Json | null;
-  score?: number | null;
-  duration_seconds?: number;
+  topic_title?: string;
+  audio_url?: string | null;
+  transcription?: string;
+  feedback?: Json;
+  duration?: number | null;
   created_at?: string;
 }
