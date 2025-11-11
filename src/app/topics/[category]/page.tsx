@@ -2,6 +2,7 @@ import { createServerClient } from '@/lib/supabase/server';
 import TopicCard from '@/components/TopicSelector/TopicCard';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { TopicsRow } from '@/types/database';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,12 +16,13 @@ const validCategories = ['日常・趣味', '説明・経験', '意見・提案'
 
 async function getTopicsByCategory(category: string) {
   const supabase = createServerClient();
-  const { data, error } = await supabase
-    .from('topics')
-    .select('*')
-    .eq('category', category)
-    .eq('is_active', true)
-    .order('display_order', { ascending: true });
+  const { data, error } =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase.from('topics') as any)
+      .select('*')
+      .eq('category', category)
+      .eq('is_active', true)
+      .order('display_order', { ascending: true });
 
   if (error) {
     console.error('Error fetching topics:', error);
@@ -58,7 +60,9 @@ export default async function CategoryTopicsPage({ params }: PageProps) {
               <p className="text-gray-500">話題が見つかりませんでした</p>
             </div>
           ) : (
-            topics.map((topic) => <TopicCard key={topic.id} topic={topic} />)
+            topics.map((topic: TopicsRow) => (
+              <TopicCard key={topic.id} topic={topic} />
+            ))
           )}
         </div>
       </div>

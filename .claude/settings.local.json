@@ -10,7 +10,8 @@
       "Bash(git push:*)",
       "Bash(git log:*)",
       "Bash(npm run lint:*)",
-      "Bash(npx prettier:*)"
+      "Bash(npx prettier:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

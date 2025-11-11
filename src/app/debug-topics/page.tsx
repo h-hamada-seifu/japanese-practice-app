@@ -6,20 +6,22 @@ export default async function DebugTopicsPage() {
   const supabase = createServerClient();
 
   // RLSを無視してデータ取得を試みる（デバッグ用）
-  const { data: allTopics, error: allError } = await supabase
-    .from('topics')
-    .select('*')
-    .order('display_order', { ascending: true });
+  const { data: allTopics, error: allError } =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase.from('topics') as any)
+      .select('*')
+      .order('display_order', { ascending: true });
 
   // カテゴリー別の件数
-  const { data: categoryData, error: categoryError } = await supabase
-    .from('topics')
-    .select('category')
-    .eq('is_active', true);
+  const { data: categoryData, error: categoryError } =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase.from('topics') as any)
+      .select('category')
+      .eq('is_active', true);
 
   const categoryCounts = categoryData
     ? categoryData.reduce(
-        (acc, topic) => {
+        (acc: Record<string, number>, topic: { category: string }) => {
           acc[topic.category] = (acc[topic.category] || 0) + 1;
           return acc;
         },
@@ -108,16 +110,24 @@ export default async function DebugTopicsPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {allTopics.map((topic) => (
-                        <tr key={topic.id} className="border-t">
-                          <td className="p-2">{topic.display_order}</td>
-                          <td className="p-2">{topic.category}</td>
-                          <td className="p-2">{topic.title}</td>
-                          <td className="p-2">
-                            {topic.is_active ? '✅' : '❌'}
-                          </td>
-                        </tr>
-                      ))}
+                      {allTopics.map(
+                        (topic: {
+                          id: string;
+                          display_order: number;
+                          category: string;
+                          title: string;
+                          is_active: boolean;
+                        }) => (
+                          <tr key={topic.id} className="border-t">
+                            <td className="p-2">{topic.display_order}</td>
+                            <td className="p-2">{topic.category}</td>
+                            <td className="p-2">{topic.title}</td>
+                            <td className="p-2">
+                              {topic.is_active ? '✅' : '❌'}
+                            </td>
+                          </tr>
+                        )
+                      )}
                     </tbody>
                   </table>
                 </div>

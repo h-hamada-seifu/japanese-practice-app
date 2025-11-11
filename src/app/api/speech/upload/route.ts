@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
+import { createRouteHandlerClient } from '@/lib/supabase/server';
 import { transcribeAudio } from '@/lib/services/speechToText';
 import { generateFeedback } from '@/lib/services/feedbackGenerator';
 import { randomUUID } from 'crypto';
+import { Json } from '@/types/database';
 
 /**
  * POST /api/speech/upload
@@ -11,7 +12,7 @@ import { randomUUID } from 'crypto';
 export async function POST(request: NextRequest) {
   try {
     // Supabaseクライアントの初期化
-    const supabase = createServerClient();
+    const supabase = createRouteHandlerClient(request);
 
     // 認証チェック
     const {
@@ -109,20 +110,21 @@ export async function POST(request: NextRequest) {
     }
 
     // 4. Supabase DBに保存
-    const { data: speechRecord, error: dbError } = await supabase
-      .from('speeches')
-      .insert({
-        id: speechId,
-        user_id: user.id,
-        topic_id: topicId,
-        topic_title: topicTitle,
-        audio_url: publicUrl,
-        transcription,
-        feedback,
-        duration,
-      })
-      .select()
-      .single();
+    const { data: speechRecord, error: dbError } =
+      await // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (supabase.from('speeches') as any)
+        .insert({
+          id: speechId,
+          user_id: user.id,
+          topic_id: topicId,
+          topic_title: topicTitle,
+          audio_url: publicUrl,
+          transcription,
+          feedback: feedback as unknown as Json,
+          duration,
+        })
+        .select()
+        .single();
 
     if (dbError) {
       console.error('Database insert error:', dbError);
