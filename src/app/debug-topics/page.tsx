@@ -134,7 +134,9 @@ export default async function DebugTopicsPage() {
           <div className="space-y-2 text-sm">
             <p>
               NEXT_PUBLIC_SUPABASE_URL:{' '}
-              {process.env.NEXT_PUBLIC_SUPABASE_URL ? '✅ 設定済み' : '❌ 未設定'}
+              {process.env.NEXT_PUBLIC_SUPABASE_URL
+                ? '✅ 設定済み'
+                : '❌ 未設定'}
             </p>
             <p>
               NEXT_PUBLIC_SUPABASE_ANON_KEY:{' '}
