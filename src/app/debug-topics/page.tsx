@@ -17,13 +17,15 @@ export default async function DebugTopicsPage() {
     .select('category')
     .eq('is_active', true);
 
-  const categoryCounts = categoryData?.reduce(
-    (acc, topic) => {
-      acc[topic.category] = (acc[topic.category] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
+  const categoryCounts = categoryData
+    ? categoryData.reduce(
+        (acc, topic) => {
+          acc[topic.category] = (acc[topic.category] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>
+      )
+    : undefined;
 
   // 認証状態の確認
   const {
@@ -69,7 +71,7 @@ export default async function DebugTopicsPage() {
                   <p>説明・経験: {categoryCounts['説明・経験'] || 0}題</p>
                   <p>意見・提案: {categoryCounts['意見・提案'] || 0}題</p>
                   <p className="pt-2 font-bold">
-                    合計: {categoryData?.length || 0}題
+                    合計: {categoryData ? categoryData.length : 0}題
                   </p>
                 </>
               ) : (
@@ -92,7 +94,7 @@ export default async function DebugTopicsPage() {
           ) : (
             <div className="space-y-4">
               <p className="text-sm text-gray-600">
-                取得件数: {allTopics?.length || 0}件
+                取得件数: {allTopics ? allTopics.length : 0}件
               </p>
               {allTopics && allTopics.length > 0 ? (
                 <div className="overflow-auto">
