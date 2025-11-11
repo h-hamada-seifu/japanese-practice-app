@@ -114,13 +114,13 @@ export default function RecordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-50 py-4 px-4 sm:py-8">
+      <div className="max-w-2xl mx-auto">
         {/* ヘッダー */}
-        <div className="mb-8">
+        <div className="mb-6">
           <button
             onClick={handleBackToTopics}
-            className="flex items-center text-blue-500 hover:text-blue-600 mb-4 transition-colors"
+            className="flex items-center text-blue-500 hover:text-blue-600 mb-4 transition-colors active:text-blue-700"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -137,22 +137,18 @@ export default function RecordPage() {
             話題一覧に戻る
           </button>
 
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                  {topic.title}
-                </h1>
-                {topic.description && (
-                  <p className="text-gray-600 mb-3">{topic.description}</p>
-                )}
-                <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
-                    対象レベル: {topic.target_level}
-                  </span>
-                </div>
-              </div>
-            </div>
+          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+              {topic.title}
+            </h1>
+            {topic.description && (
+              <p className="text-sm sm:text-base text-gray-600 mb-3">
+                {topic.description}
+              </p>
+            )}
+            <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs sm:text-sm font-medium rounded-full">
+              対象レベル: {topic.target_level}
+            </span>
           </div>
         </div>
 
@@ -191,9 +187,11 @@ export default function RecordPage() {
         )}
 
         {/* 使い方のヒント */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-blue-900 font-medium mb-2">📝 録音のヒント</h3>
-          <ul className="text-blue-800 text-sm space-y-1 list-disc list-inside">
+        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <h3 className="text-blue-900 font-medium mb-2 text-sm sm:text-base">
+            📝 録音のヒント
+          </h3>
+          <ul className="text-blue-800 text-xs sm:text-sm space-y-1 list-disc list-inside">
             <li>録音開始前に、マイクへのアクセス許可が求められます</li>
             <li>静かな環境で録音することをお勧めします</li>
             <li>録音中は一時停止・再開が可能です</li>

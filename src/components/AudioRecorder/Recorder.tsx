@@ -59,7 +59,7 @@ export const Recorder: React.FC<AudioRecorderProps> = ({
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+    <div className="w-full max-w-2xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-sm">
       {/* エラー表示 */}
       {error && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
@@ -73,26 +73,26 @@ export const Recorder: React.FC<AudioRecorderProps> = ({
           {recordingState === 'recording' && (
             <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse mr-2"></div>
           )}
-          <p className="text-lg font-medium text-gray-700">
+          <p className="text-base sm:text-lg font-medium text-gray-700">
             {getStatusMessage()}
           </p>
         </div>
-        <p className="text-3xl font-bold text-gray-900">
+        <p className="text-4xl sm:text-5xl font-bold text-gray-900">
           {formatDuration(duration)}
         </p>
         {maxDuration && (
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
             最大録音時間: {formatDuration(maxDuration)}
           </p>
         )}
       </div>
 
       {/* コントロールボタン */}
-      <div className="flex justify-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row justify-center gap-3 mb-6">
         {recordingState === 'idle' && (
           <button
             onClick={startRecording}
-            className="flex items-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors"
+            className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-medium rounded-lg transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -114,7 +114,7 @@ export const Recorder: React.FC<AudioRecorderProps> = ({
           <>
             <button
               onClick={pauseRecording}
-              className="flex items-center gap-2 px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-lg transition-colors"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 text-white font-medium rounded-lg transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -132,7 +132,7 @@ export const Recorder: React.FC<AudioRecorderProps> = ({
             </button>
             <button
               onClick={handleStopRecording}
-              className="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition-colors"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white font-medium rounded-lg transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -155,7 +155,7 @@ export const Recorder: React.FC<AudioRecorderProps> = ({
           <>
             <button
               onClick={resumeRecording}
-              className="flex items-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white font-medium rounded-lg transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -173,7 +173,7 @@ export const Recorder: React.FC<AudioRecorderProps> = ({
             </button>
             <button
               onClick={handleStopRecording}
-              className="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition-colors"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white font-medium rounded-lg transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -195,7 +195,7 @@ export const Recorder: React.FC<AudioRecorderProps> = ({
         {recordingState === 'stopped' && audioURL && (
           <button
             onClick={clearRecording}
-            className="flex items-center gap-2 px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg transition-colors"
+            className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 bg-gray-500 hover:bg-gray-600 active:bg-gray-700 text-white font-medium rounded-lg transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

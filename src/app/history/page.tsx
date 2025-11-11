@@ -36,19 +36,21 @@ export default async function HistoryPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
         {/* ヘッダー */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-gray-900">発話履歴</h1>
+        <div className="mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+              発話履歴
+            </h1>
             <Link
               href="/dashboard"
-              className="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors text-center sm:text-left"
             >
               ダッシュボードへ戻る
             </Link>
           </div>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             これまでの発話練習の記録を確認できます。
           </p>
         </div>
@@ -57,7 +59,7 @@ export default async function HistoryPage() {
         {speeches.length > 0 ? (
           <SpeechList speeches={speeches} />
         ) : (
-          <div className="bg-white p-12 rounded-lg border border-gray-200 text-center">
+          <div className="bg-white p-8 sm:p-12 rounded-lg border border-gray-200 text-center">
             <div className="mb-4">
               <svg
                 className="mx-auto h-12 w-12 text-gray-400"
@@ -73,15 +75,15 @@ export default async function HistoryPage() {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
               発話履歴がありません
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-sm sm:text-base text-gray-600 mb-6">
               話題を選択して発話練習を始めましょう。
             </p>
             <Link
               href="/dashboard"
-              className="inline-block px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              className="inline-block px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 active:bg-blue-700 transition-colors"
             >
               話題を選ぶ
             </Link>
