@@ -1,9 +1,42 @@
 import { createServerClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 
 export default async function DebugTopicsPage() {
   const supabase = createServerClient();
+
+  // Cookie情報を取得
+  const cookieStore = cookies();
+  const allCookies = cookieStore.getAll();
+  const supabaseCookies = allCookies.filter((cookie) =>
+    cookie.name.includes('supabase')
+  );
+
+  console.log('=== デバッグ情報 ===');
+  console.log('全Cookie数:', allCookies.length);
+  console.log(
+    'Supabase関連Cookie:',
+    supabaseCookies.map((c) => ({ name: c.name, hasValue: !!c.value }))
+  );
+
+  // セッション情報を取得
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  console.log('セッション存在:', !!session);
+  console.log('セッションエラー:', sessionError);
+
+  // 認証状態の確認
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  console.log('ユーザー存在:', !!user);
+  console.log('ユーザーエラー:', userError);
 
   // RLSを無視してデータ取得を試みる（デバッグ用）
   const { data: allTopics, error: allError } =
@@ -11,6 +44,9 @@ export default async function DebugTopicsPage() {
     await (supabase.from('topics') as any)
       .select('*')
       .order('display_order', { ascending: true });
+
+  console.log('Topics取得件数:', allTopics?.length || 0);
+  console.log('Topicsエラー:', allError);
 
   // カテゴリー別の件数
   const { data: categoryData, error: categoryError } =
@@ -29,20 +65,62 @@ export default async function DebugTopicsPage() {
       )
     : undefined;
 
-  // 認証状態の確認
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">デバッグ: Topics データ</h1>
 
+        {/* Cookie情報 */}
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <h2 className="text-xl font-bold mb-4">Cookie情報</h2>
+          <div className="space-y-2 text-sm">
+            <p>全Cookie数: {allCookies.length}</p>
+            <p>Supabase関連Cookie数: {supabaseCookies.length}</p>
+            {supabaseCookies.length > 0 && (
+              <div className="mt-2 space-y-1">
+                {supabaseCookies.map((cookie) => (
+                  <div
+                    key={cookie.name}
+                    className="text-xs bg-gray-50 p-2 rounded"
+                  >
+                    <p className="font-mono">名前: {cookie.name}</p>
+                    <p className="font-mono truncate">
+                      値: {cookie.value.substring(0, 50)}...
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* セッション情報 */}
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <h2 className="text-xl font-bold mb-4">セッション情報</h2>
+          {sessionError ? (
+            <div className="text-red-600">
+              <p>エラー: {sessionError.message}</p>
+            </div>
+          ) : session ? (
+            <div>
+              <p className="text-green-600">✅ セッション存在</p>
+              <p className="text-sm text-gray-600 mt-2">
+                アクセストークン: {session.access_token.substring(0, 20)}...
+              </p>
+            </div>
+          ) : (
+            <p className="text-red-600">❌ セッションなし</p>
+          )}
+        </div>
+
         {/* 認証状態 */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-bold mb-4">認証状態</h2>
-          {user ? (
+          {userError ? (
+            <div className="text-red-600">
+              <p>エラー: {userError.message}</p>
+            </div>
+          ) : user ? (
             <div>
               <p className="text-green-600">✅ ログイン済み</p>
               <p className="text-sm text-gray-600 mt-2">

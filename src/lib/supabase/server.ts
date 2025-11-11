@@ -18,7 +18,9 @@ export function createServerClient() {
   return createSupabaseServerClient<Database>(supabaseUrl, supabaseAnonKey, {
     cookies: {
       get(name: string) {
-        return cookieStore.get(name)?.value;
+        const value = cookieStore.get(name)?.value;
+        console.log('[Server] Cookie取得:', name, value ? 'あり' : 'なし');
+        return value;
       },
       set(name: string, value: string, options: Record<string, unknown>) {
         try {
