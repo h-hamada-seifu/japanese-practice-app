@@ -7,6 +7,8 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
 
+  console.log('[Auth Callback] Code:', code ? 'あり' : 'なし');
+
   if (code) {
     const cookieStore = cookies();
     const supabase = createServerClient(
@@ -15,15 +17,19 @@ export async function GET(request: NextRequest) {
       {
         cookies: {
           getAll() {
-            return cookieStore.getAll();
+            const cookies = cookieStore.getAll();
+            console.log('[Auth Callback] getAll:', cookies.length);
+            return cookies;
           },
           setAll(cookiesToSet) {
+            console.log('[Auth Callback] setAll:', cookiesToSet.length);
             try {
-              cookiesToSet.forEach(({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-              );
-            } catch {
-              // Server Componentからの呼び出しの場合は無視
+              cookiesToSet.forEach(({ name, value, options }) => {
+                console.log('[Auth Callback] Cookie設定:', name);
+                cookieStore.set(name, value, options);
+              });
+            } catch (error) {
+              console.error('[Auth Callback] Cookie設定エラー:', error);
             }
           },
         },
@@ -32,6 +38,10 @@ export async function GET(request: NextRequest) {
 
     // OAuth認証コードをセッションに交換
     const { error } = await supabase.auth.exchangeCodeForSession(code);
+    console.log(
+      '[Auth Callback] exchangeCodeForSession:',
+      error ? 'エラー' : '成功'
+    );
 
     if (!error) {
       // ユーザー情報を取得してドメインチェック

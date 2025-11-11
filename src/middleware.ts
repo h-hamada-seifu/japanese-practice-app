@@ -2,6 +2,12 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
+  console.log('[Middleware] パス:', request.nextUrl.pathname);
+  console.log(
+    '[Middleware] リクエストCookie数:',
+    request.cookies.getAll().length
+  );
+
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -12,12 +18,16 @@ export async function middleware(request: NextRequest) {
     {
       cookies: {
         getAll() {
-          return request.cookies.getAll();
+          const cookies = request.cookies.getAll();
+          console.log('[Middleware] getAll呼び出し:', cookies.length);
+          return cookies;
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
+          console.log('[Middleware] setAll呼び出し:', cookiesToSet.length);
+          cookiesToSet.forEach(({ name, value }) => {
+            console.log('[Middleware] Cookie設定:', name);
+            request.cookies.set(name, value);
+          });
           supabaseResponse = NextResponse.next({
             request,
           });
