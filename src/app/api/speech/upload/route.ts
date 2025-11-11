@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@/lib/supabase/server';
+import { createServerClient } from '@supabase/ssr';
 import { transcribeAudio } from '@/lib/services/speechToText';
 import { generateFeedback } from '@/lib/services/feedbackGenerator';
 import { randomUUID } from 'crypto';
 import { Json } from '@/types/database';
+import { cookies } from 'next/headers';
 
 /**
  * POST /api/speech/upload
@@ -12,7 +13,27 @@ import { Json } from '@/types/database';
 export async function POST(request: NextRequest) {
   try {
     // Supabaseクライアントの初期化
-    const supabase = createRouteHandlerClient(request);
+    const cookieStore = cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              );
+            } catch {
+              // middlewareで管理されるため無視
+            }
+          },
+        },
+      }
+    );
 
     // 認証チェック
     const {
