@@ -16,6 +16,9 @@ export async function generateFeedback(
     throw new Error('GEMINI_API_KEY environment variable is not set');
   }
 
+  // [?]マークの数をカウント
+  const unknownWordsCount = (transcription.match(/\[?\]/g) || []).length;
+
   // Geminiへのプロンプト
   const prompt = `
 あなたは日本語教師です。JLPT N2-N3レベルの留学生の発話を添削してください。
@@ -23,6 +26,21 @@ export async function generateFeedback(
 【話題】${topicTitle}
 【学生の発話】
 ${transcription}
+
+${
+  unknownWordsCount > 0
+    ? `
+【重要】
+文字起こし結果に[?]マークが${unknownWordsCount}箇所含まれています。
+これは音声認識で聞き取れなかった部分です。
+以下の点を必ず指摘してください：
+- 「${unknownWordsCount}箇所が聞き取れませんでした」という事実
+- もっとゆっくり、はっきりと発音する必要性
+- 母音を明瞭に発音することの重要性
+- 文脈から推測できる場合は「おそらく〇〇と言いたかったのでは？」と提案
+`
+    : ''
+}
 
 【出力形式】
 以下のJSON形式で返してください:
@@ -38,7 +56,8 @@ ${transcription}
 - 不自然な表現や語彙の選択
 - より適切な語彙・表現の提案
 - 肯定的なフィードバックも必ず含める
-- スコアは文法・語彙・自然さを総合して100点満点で評価
+- スコアは文法・語彙・自然さ・発音の明瞭さを総合して100点満点で評価
+- [?]マークが含まれている場合、発音の明瞭さのスコアを大きく減点する
 `;
 
   // Gemini APIへのリクエスト

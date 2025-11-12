@@ -45,6 +45,7 @@ export async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
     languageCode: 'ja-JP',
     model: 'latest_long',
     enableAutomaticPunctuation: true,
+    enableWordConfidence: true, // 単語ごとの信頼度を取得
   };
 
   // 音声認識の実行
@@ -57,8 +58,38 @@ export async function transcribeAudio(audioBuffer: Buffer): Promise<string> {
     );
   }
 
+  // 信頼度が低い部分を[?]でマークする
+  const CONFIDENCE_THRESHOLD = 0.6; // 信頼度の閾値
+
   const transcription = response.results
-    .map((result) => result.alternatives?.[0]?.transcript || '')
+    .map((result) => {
+      const alternative = result.alternatives?.[0];
+      if (!alternative) return '';
+
+      // 単語ごとの信頼度をチェック
+      if (alternative.words && alternative.words.length > 0) {
+        return alternative.words
+          .map((wordInfo) => {
+            const confidence = wordInfo.confidence || 0;
+            const word = wordInfo.word || '';
+
+            // 信頼度が閾値より低い場合は[?]でマーク
+            if (confidence < CONFIDENCE_THRESHOLD) {
+              return '[?]';
+            }
+            return word;
+          })
+          .join('');
+      }
+
+      // 単語情報がない場合は全体の信頼度をチェック
+      const confidence = alternative.confidence || 0;
+      if (confidence < CONFIDENCE_THRESHOLD) {
+        return '[?]';
+      }
+
+      return alternative.transcript || '';
+    })
     .join('')
     .trim();
 

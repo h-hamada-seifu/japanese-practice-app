@@ -3,7 +3,7 @@
 import { useAudioRecorder } from '@/hooks/useAudioRecorder';
 
 interface AudioRecorderProps {
-  onRecordingComplete?: (blob: Blob, url: string) => void;
+  onRecordingComplete?: (blob: Blob, url: string, duration: number) => void;
   maxDuration?: number; // 最大録音時間（秒）
 }
 
@@ -40,7 +40,7 @@ export const Recorder: React.FC<AudioRecorderProps> = ({
   const handleStopRecording = () => {
     stopRecording();
     if (audioBlob && audioURL && onRecordingComplete) {
-      onRecordingComplete(audioBlob, audioURL);
+      onRecordingComplete(audioBlob, audioURL, duration);
     }
   };
 
