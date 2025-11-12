@@ -8,11 +8,14 @@ export async function GET() {
     console.log('[DB Test] Creating Supabase client...');
 
     // 1. 認証状態の確認
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     console.log('[DB Test] Auth check:', {
       hasUser: !!user,
       userEmail: user?.email,
-      authError: authError?.message
+      authError: authError?.message,
     });
 
     // 2. テーブルの存在確認
@@ -25,7 +28,7 @@ export async function GET() {
       hasData: !!tables,
       dataCount: tables?.length || 0,
       error: tablesError?.message,
-      errorDetails: tablesError
+      errorDetails: tablesError,
     });
 
     // 3. 全カテゴリーのカウント取得
@@ -46,13 +49,13 @@ export async function GET() {
         dataLength: data?.length || 0,
         error: error?.message,
         errorCode: error?.code,
-        errorHint: error?.hint
+        errorHint: error?.hint,
       });
 
       console.log(`[DB Test] Category ${category}:`, {
         count,
         dataLength: data?.length || 0,
-        error: error?.message
+        error: error?.message,
       });
     }
 
@@ -65,7 +68,7 @@ export async function GET() {
       hasData: !!allTopics,
       dataCount: allTopics?.length || 0,
       error: allError?.message,
-      errorDetails: allError
+      errorDetails: allError,
     });
 
     // 5. Supabase URLとAnon Keyの存在確認（値は隠す）
@@ -102,7 +105,7 @@ export async function GET() {
         },
       },
       diagnostics: {
-        possibleIssues: [],
+        possibleIssues: [] as string[],
       },
     };
 
@@ -117,16 +120,21 @@ export async function GET() {
       response.diagnostics.possibleIssues.push('RLS policy blocking access');
     }
     if (allTopics?.length === 0 && !allError) {
-      response.diagnostics.possibleIssues.push('Table exists but contains no data');
+      response.diagnostics.possibleIssues.push(
+        'Table exists but contains no data'
+      );
     }
 
     return NextResponse.json(response);
   } catch (error) {
     console.error('[DB Test] Unexpected error:', error);
-    return NextResponse.json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString(),
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 }
+    );
   }
 }
