@@ -37,7 +37,10 @@ export default function AuthCallbackPage() {
           '[Auth Callback Page] Authentication successful, redirecting to dashboard'
         );
         router.push('/dashboard');
-      } else if (event === 'SIGNED_OUT' || (!session && event === 'INITIAL_SESSION')) {
+      } else if (
+        event === 'SIGNED_OUT' ||
+        (!session && event === 'INITIAL_SESSION')
+      ) {
         if (!processed) {
           processed = true;
           console.log('[Auth Callback Page] No session, redirecting to home');
@@ -64,7 +67,9 @@ export default function AuthCallbackPage() {
 
         if (session?.user && !processed) {
           processed = true;
-          console.log('[Auth Callback Page] Session detected after hash processing');
+          console.log(
+            '[Auth Callback Page] Session detected after hash processing'
+          );
 
           // ドメインチェック
           if (!isAllowedDomain(session.user.email || '')) {
