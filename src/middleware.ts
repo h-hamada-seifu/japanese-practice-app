@@ -3,6 +3,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
   console.log('[Middleware] パス:', request.nextUrl.pathname);
+  console.log('[Middleware] Full URL:', request.url);
+  console.log('[Middleware] Search params:', Object.fromEntries(request.nextUrl.searchParams));
   console.log(
     '[Middleware] リクエストCookie数:',
     request.cookies.getAll().length
