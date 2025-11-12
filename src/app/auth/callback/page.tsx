@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { isAllowedDomain } from '@/lib/supabase/auth';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let processed = false;
@@ -34,7 +33,9 @@ export default function AuthCallbackPage() {
         }
 
         // 認証成功 - ダッシュボードにリダイレクト
-        console.log('[Auth Callback Page] Authentication successful, redirecting to dashboard');
+        console.log(
+          '[Auth Callback Page] Authentication successful, redirecting to dashboard'
+        );
         router.push('/dashboard');
       } else if (event === 'SIGNED_OUT' || (!session && event === 'INITIAL_SESSION')) {
         if (!processed) {
@@ -51,7 +52,9 @@ export default function AuthCallbackPage() {
       console.log('[Auth Callback Page] URL hash:', hash);
 
       if (hash && hash.includes('access_token')) {
-        console.log('[Auth Callback Page] Found access_token in hash, waiting for Supabase to process...');
+        console.log(
+          '[Auth Callback Page] Found access_token in hash, waiting for Supabase to process...'
+        );
         // Supabaseが処理するまで少し待つ
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -83,17 +86,6 @@ export default function AuthCallbackPage() {
       subscription.unsubscribe();
     };
   }, [router]);
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <p className="text-gray-600">トップページにリダイレクトします...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex items-center justify-center min-h-screen">
