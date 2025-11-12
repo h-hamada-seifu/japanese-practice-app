@@ -24,8 +24,6 @@ export async function signInWithGoogle() {
         prompt: 'consent',
       },
       skipBrowserRedirect: false,
-      // PKCEフローを使用（codeパラメータを受け取る）
-      flowType: 'pkce',
     },
   });
 
