@@ -1,4 +1,5 @@
 import TeacherLayout from '@/components/teacher/TeacherLayout';
+import StudentDetailClient from '@/components/teacher/StudentDetailClient';
 import {
   getCurrentTeacher,
   getStudentDetails,
@@ -25,17 +26,6 @@ export default async function StudentDetailPage({ params }: Props) {
   // 生徒詳細情報を取得
   const { student, stats, recent_practices, score_trend } =
     await getStudentDetails(params.student_id);
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
 
   return (
     <TeacherLayout teacherName={teacher.name}>
@@ -249,77 +239,13 @@ export default async function StudentDetailPage({ params }: Props) {
             </div>
           </div>
 
-          {/* 右カラム（練習履歴） */}
-          <div className="col-span-5 space-y-6">
-            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  📝 練習履歴（全{stats.total_practices}件）
-                </h3>
-              </div>
-
-              {recent_practices.length === 0 ? (
-                <div className="p-12 text-center text-gray-500">
-                  練習履歴がありません
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-200">
-                  {recent_practices.map((practice) => {
-                    const feedback = practice.feedback as {
-                      score?: number;
-                    };
-                    return (
-                      <div
-                        key={practice.id}
-                        className="p-4 hover:bg-gray-50 transition-colors"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <p className="font-medium text-gray-900">
-                              {practice.topic_title}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-0.5">
-                              {practice.topic_category}
-                            </p>
-                            <p className="text-xs text-gray-400 mt-1">
-                              {formatDate(practice.created_at)}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`inline-flex items-center px-2 py-1 rounded text-sm font-medium ${
-                                (feedback.score || 0) >= 80
-                                  ? 'bg-green-100 text-green-800'
-                                  : (feedback.score || 0) >= 60
-                                    ? 'bg-blue-100 text-blue-800'
-                                    : 'bg-yellow-100 text-yellow-800'
-                              }`}
-                            >
-                              {feedback.score || 0}点
-                            </span>
-                            <button className="text-blue-600 hover:text-blue-800 text-sm">
-                              🎧
-                            </button>
-                            <button className="text-gray-600 hover:text-gray-800 text-sm">
-                              📝
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {recent_practices.length > 0 && (
-                <div className="p-4 bg-gray-50 text-center">
-                  <button className="text-sm text-blue-600 hover:text-blue-800">
-                    すべて表示 →
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+          {/* 右カラム（練習履歴） - クライアントコンポーネント */}
+          <StudentDetailClient
+            studentId={params.student_id}
+            student={student}
+            stats={stats}
+            recent_practices={recent_practices}
+          />
         </div>
       </div>
     </TeacherLayout>
