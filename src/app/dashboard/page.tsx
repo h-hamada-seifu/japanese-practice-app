@@ -1,100 +1,69 @@
-'use client';
+import { redirect } from 'next/navigation';
+import { createServerClient } from '@/lib/supabase/server';
+import { getUserStreak } from '@/lib/services/streakService';
+import { getDashboardStats } from '@/lib/services/dashboardService';
+import DashboardNav from '@/components/Dashboard/DashboardNav';
+import StreakDisplay from '@/components/Dashboard/StreakDisplay';
+import StatsCards from '@/components/Dashboard/StatsCards';
+import ScoreChart from '@/components/Dashboard/ScoreChart';
+import CategoryStats from '@/components/Dashboard/CategoryStats';
+import Link from 'next/link';
 
-import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { getCurrentUser, signOut } from '@/lib/supabase/auth';
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
 
-export default function Dashboard() {
-  const router = useRouter();
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export default async function Dashboard() {
+  const supabase = createServerClient();
 
-  const checkUser = useCallback(async () => {
-    try {
-      const user = await getCurrentUser();
-      if (!user) {
-        router.push('/');
-      } else {
-        setUserEmail(user.email || null);
-      }
-    } catch (error) {
-      console.error('User check error:', error);
-      router.push('/');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [router]);
+  // 認証チェック
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  useEffect(() => {
-    checkUser();
-  }, [checkUser]);
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      router.push('/');
-    } catch (error) {
-      console.error('Sign out error:', error);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-600">読み込み中...</div>
-      </div>
-    );
+  if (!user) {
+    redirect('/');
   }
+
+  // ストリークデータと統計データを並行取得
+  const [streak, stats] = await Promise.all([
+    getUserStreak(user.id),
+    getDashboardStats(user.id),
+  ]);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-bold text-gray-900">
-                日本語練習アプリ
-              </h1>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">{userEmail}</span>
-              <button
-                onClick={handleSignOut}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                サインアウト
-              </button>
-            </div>
-          </div>
+      <DashboardNav userEmail={user.email || null} />
+
+      <main className="max-w-6xl mx-auto py-6 px-4">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            ダッシュボード
+          </h2>
+          <p className="text-gray-600 text-sm">
+            あなたの学習状況を確認しましょう
+          </p>
         </div>
-      </nav>
 
-      <main className="max-w-2xl mx-auto py-6 px-4">
         <div className="space-y-6">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              ダッシュボード
-            </h2>
-            <p className="text-gray-600 text-sm">
-              ようこそ！日本語の発話練習を始めましょう。
-            </p>
-          </div>
+          {/* ストリーク表示 */}
+          <StreakDisplay streak={streak} />
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-blue-900 mb-2">
-              認証成功
-            </h3>
-            <p className="text-sm text-blue-700">
-              あなたのアカウント（{userEmail}
-              ）で正常にサインインしました。
-            </p>
-          </div>
+          {/* 統計カード */}
+          <StatsCards stats={stats} />
 
-          {/* メニューボタン */}
-          <div className="space-y-3">
-            <a
+          {/* スコアグラフ */}
+          {stats.totalPractices > 0 && <ScoreChart data={stats.recentScores} />}
+
+          {/* カテゴリ別統計 */}
+          {stats.categoryStats.length > 0 && (
+            <CategoryStats categoryStats={stats.categoryStats} />
+          )}
+
+          {/* アクションボタン */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Link
               href="/topics"
-              className="block w-full bg-blue-500 hover:bg-blue-600 text-white rounded-lg p-4 shadow-sm transition-colors active:bg-blue-700"
+              className="block w-full bg-blue-500 hover:bg-blue-600 text-white rounded-lg p-6 shadow-sm transition-colors"
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -104,7 +73,7 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <svg
-                  className="w-6 h-6"
+                  className="w-6 h-6 flex-shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -117,11 +86,11 @@ export default function Dashboard() {
                   />
                 </svg>
               </div>
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/history"
-              className="block w-full bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 rounded-lg p-4 shadow-sm transition-colors active:bg-gray-100"
+              className="block w-full bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 rounded-lg p-6 shadow-sm transition-colors"
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -131,7 +100,7 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <svg
-                  className="w-6 h-6"
+                  className="w-6 h-6 flex-shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -144,8 +113,26 @@ export default function Dashboard() {
                   />
                 </svg>
               </div>
-            </a>
+            </Link>
           </div>
+
+          {/* 初回ユーザー向けメッセージ */}
+          {stats.totalPractices === 0 && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                👋 ようこそ！
+              </h3>
+              <p className="text-sm text-blue-700 mb-4">
+                まだ練習記録がありません。「話題を選んで練習」から始めましょう！
+              </p>
+              <ul className="text-sm text-blue-800 space-y-2 list-disc list-inside">
+                <li>15種類の話題から選んで練習できます</li>
+                <li>AIが自動で発音を評価してフィードバックします</li>
+                <li>毎日練習するとストリーク記録が伸びます</li>
+                <li>継続することでスコアが向上します</li>
+              </ul>
+            </div>
+          )}
         </div>
       </main>
     </div>
