@@ -19,15 +19,35 @@
 
 ## 🎯 主要機能
 
-### 1. 生徒一覧＆概要ビュー
+### 1. 担当クラス一覧ビュー
 
-**表示内容**:
+**パス**: `/teacher/classes`
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ 📚 クラス概要                                                    │
+│ 📚 担当クラス一覧                          [➕ 新規クラス作成]   │
+├──────────────┬─────────┬────────┬────────┬────────┬──────────┤
+│ クラス名      │ コード   │ 生徒数 │ 平均   │ 今週   │ アクション│
+│              │         │        │ スコア │ 練習数  │          │
+├──────────────┼─────────┼────────┼────────┼────────┼──────────┤
+│ 2025春期クラスA│ 2025-S-A│ 15名   │ 78点   │ 42回   │ [詳細]   │
+│ N3レベルクラス │ N3-01   │ 10名   │ 72点   │ 26回   │ [詳細]   │
+│ 上級会話クラス │ ADV-01  │ 8名    │ 85点   │ 35回   │ [詳細]   │
+└──────────────┴─────────┴────────┴────────┴────────┴──────────┘
+```
+
+---
+
+### 2. クラス別生徒一覧＆概要ビュー
+
+**パス**: `/teacher/classes/[class_id]/students`
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 📚 クラス: 2025春期クラスA (2025-S-A)                            │
 ├─────────────────────────────────────────────────────────────────┤
-│ 登録生徒数: 25名 | アクティブ: 18名 | 要注意: 3名              │
-│ 平均スコア: 76.5点 (+2.3↑) | 今週の総練習回数: 68回           │
+│ 登録生徒数: 15名 | アクティブ: 12名 | 要注意: 2名 | 停滞: 1名  │
+│ 平均スコア: 78.2点 (+3.1↑) | 今週の総練習回数: 42回           │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
@@ -55,11 +75,37 @@
 
 ---
 
-### 2. 生徒詳細ビュー
+### 3. 全担当生徒一覧ビュー（複数クラス統合）
+
+**パス**: `/teacher/students`
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 👥 全担当生徒                  [🏷クラスフィルタ▼] [🔍検索]    │
+├──────┬────────┬──────────┬────────┬────────┬────────┬────────┤
+│ 状態 │ 名前    │ クラス    │ストリーク│ 今週  │ 平均   │ 最終   │
+│      │        │          │         │ 練習数 │ スコア │ 練習日  │
+├──────┼────────┼──────────┼────────┼────────┼────────┼────────┤
+│ ✅   │田中太郎 │2025春期A  │🔥 12日  │ 4回   │ 82点   │ 今日   │
+│ ⚠️   │鈴木花子 │2025春期A  │🔥 2日   │ 1回   │ 68点   │ 3日前  │
+│ ✅   │高橋春樹 │N3レベル   │🔥 8日   │ 3回   │ 75点   │ 昨日   │
+│ 🔴   │佐藤次郎 │2025春期A  │ - 0日   │ 0回   │ 55点   │10日前  │
+└──────┴────────┴──────────┴────────┴────────┴────────┴────────┘
+```
+
+**クラスフィルタ**:
+- すべてのクラス
+- 2025春期クラスA
+- N3レベルクラス
+- 上級会話クラス
+
+---
+
+### 4. 生徒詳細ビュー
 
 **パス**: `/teacher/students/[student_id]`
 
-#### 2.1 基本情報＆サマリー
+#### 4.1 基本情報＆サマリー
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -72,7 +118,7 @@
 └─────────────────────────────────────────────────────────────┘
 ```
 
-#### 2.2 スコア推移グラフ
+#### 4.2 スコア推移グラフ
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -92,7 +138,7 @@
 └─────────────────────────────────────────────────────────────┘
 ```
 
-#### 2.3 練習履歴一覧
+#### 4.3 練習履歴一覧
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -111,7 +157,7 @@
 └──────┴──────────┴──────────────┴───────┴─────────────────┘
 ```
 
-#### 2.4 個別練習詳細（モーダル/別ページ）
+#### 4.4 個別練習詳細（モーダル/別ページ）
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -161,7 +207,7 @@
 
 ---
 
-### 3. クラス統計ビュー
+### 5. クラス統計ビュー
 
 **パス**: `/teacher/analytics`
 
@@ -210,7 +256,7 @@
 
 ---
 
-### 4. 通知＆アラート機能
+### 6. 通知＆アラート機能
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -231,7 +277,7 @@
 
 ---
 
-### 5. レポート出力機能
+### 7. レポート出力機能
 
 **出力形式**: CSV, PDF
 
@@ -275,31 +321,102 @@ CREATE POLICY "Teachers can view own profile" ON teachers
   FOR SELECT USING (auth.uid() = user_id);
 ```
 
-#### 2. `teacher_student_assignments` テーブル
-講師と生徒の紐付け（1講師：多生徒）
+#### 2. `classes` テーブル
+クラス情報
 
 ```sql
-CREATE TABLE teacher_student_assignments (
+CREATE TABLE classes (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  teacher_id UUID REFERENCES teachers(id) ON DELETE CASCADE,
-  student_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  assigned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  assigned_by UUID REFERENCES auth.users(id),  -- 誰が割り当てたか
-  notes TEXT,  -- 割り当てメモ
-
-  UNIQUE(teacher_id, student_id)
+  name TEXT NOT NULL,  -- 例: '2025年度 春期クラスA', 'N3レベルクラス'
+  code TEXT UNIQUE,    -- 例: '2025-SPRING-A', 'N3-01'
+  description TEXT,
+  academic_year TEXT,  -- 例: '2025'
+  semester TEXT,       -- 例: 'spring', 'fall'
+  start_date DATE,
+  end_date DATE,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- RLS設定
-ALTER TABLE teacher_student_assignments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE classes ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Teachers can view own assignments" ON teacher_student_assignments
+-- 講師は自分が担任のクラスを閲覧可能
+CREATE POLICY "Teachers can view assigned classes" ON classes
+  FOR SELECT USING (
+    id IN (
+      SELECT class_id FROM teacher_class_assignments
+      WHERE teacher_id IN (SELECT id FROM teachers WHERE user_id = auth.uid())
+    )
+  );
+
+-- 生徒は自分が所属するクラスを閲覧可能
+CREATE POLICY "Students can view own classes" ON classes
+  FOR SELECT USING (
+    id IN (
+      SELECT class_id FROM student_class_assignments
+      WHERE student_id = auth.uid()
+    )
+  );
+```
+
+#### 3. `teacher_class_assignments` テーブル
+講師とクラスの紐付け（担任）
+
+```sql
+CREATE TABLE teacher_class_assignments (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  teacher_id UUID REFERENCES teachers(id) ON DELETE CASCADE,
+  class_id UUID REFERENCES classes(id) ON DELETE CASCADE,
+  role TEXT DEFAULT 'homeroom_teacher',  -- 'homeroom_teacher', 'assistant', 'supervisor'
+  assigned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  assigned_by UUID REFERENCES auth.users(id),  -- 誰が割り当てたか
+
+  UNIQUE(teacher_id, class_id)
+);
+
+-- RLS設定
+ALTER TABLE teacher_class_assignments ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Teachers can view own class assignments" ON teacher_class_assignments
   FOR SELECT USING (
     teacher_id IN (SELECT id FROM teachers WHERE user_id = auth.uid())
   );
 ```
 
-#### 3. `teacher_notes` テーブル
+#### 4. `student_class_assignments` テーブル
+生徒とクラスの紐付け
+
+```sql
+CREATE TABLE student_class_assignments (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  student_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  class_id UUID REFERENCES classes(id) ON DELETE CASCADE,
+  enrolled_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  status TEXT DEFAULT 'active',  -- 'active', 'completed', 'withdrawn'
+
+  UNIQUE(student_id, class_id)
+);
+
+-- RLS設定
+ALTER TABLE student_class_assignments ENABLE ROW LEVEL SECURITY;
+
+-- 講師は担当クラスの生徒割り当てを閲覧可能
+CREATE POLICY "Teachers can view class students" ON student_class_assignments
+  FOR SELECT USING (
+    class_id IN (
+      SELECT class_id FROM teacher_class_assignments
+      WHERE teacher_id IN (SELECT id FROM teachers WHERE user_id = auth.uid())
+    )
+  );
+
+-- 生徒は自分のクラス割り当てを閲覧可能
+CREATE POLICY "Students can view own assignments" ON student_class_assignments
+  FOR SELECT USING (student_id = auth.uid());
+```
+
+#### 5. `teacher_notes` テーブル
 講師が生徒の練習に対して記録するメモ（非公開）
 
 ```sql
@@ -322,7 +439,7 @@ CREATE POLICY "Teachers can manage own notes" ON teacher_notes
   );
 ```
 
-#### 4. `teacher_alerts` テーブル
+#### 6. `teacher_alerts` テーブル
 講師向け通知・アラート
 
 ```sql
@@ -366,12 +483,40 @@ CREATE POLICY "Teachers can update own alerts" ON teacher_alerts
 
 ### エンドポイント一覧
 
-#### 1. 生徒一覧取得
+#### 1. 担当クラス一覧取得
 ```typescript
-GET /api/teacher/students
+GET /api/teacher/classes
 
 Response:
 {
+  classes: [
+    {
+      id: string,
+      name: string,
+      code: string,
+      description: string,
+      academic_year: string,
+      semester: string,
+      student_count: number,
+      active_student_count: number,
+      average_score: number,
+      is_active: boolean
+    }
+  ]
+}
+```
+
+#### 2. クラスの生徒一覧取得
+```typescript
+GET /api/teacher/classes/[class_id]/students
+
+Response:
+{
+  class: {
+    id: string,
+    name: string,
+    code: string
+  },
   students: [
     {
       id: string,
@@ -396,7 +541,41 @@ Response:
 }
 ```
 
-#### 2. 生徒詳細取得
+#### 3. 全担当生徒一覧取得（複数クラス統合）
+```typescript
+GET /api/teacher/students?class_id=[optional_class_id]
+
+// class_idを指定した場合は特定クラスのみ、指定しない場合は全担当クラスの生徒
+
+Response:
+{
+  students: [
+    {
+      id: string,
+      name: string,
+      email: string,
+      class_id: string,
+      class_name: string,
+      status: 'active' | 'warning' | 'inactive',
+      current_streak: number,
+      this_week_practices: number,
+      average_score: number,
+      last_practice_date: string,
+      total_practices: number
+    }
+  ],
+  summary: {
+    total_students: number,
+    active_students: number,
+    warning_students: number,
+    inactive_students: number,
+    class_average_score: number,
+    this_week_total_practices: number
+  }
+}
+```
+
+#### 4. 生徒詳細取得
 ```typescript
 GET /api/teacher/students/[student_id]
 
@@ -441,7 +620,7 @@ Response:
 }
 ```
 
-#### 3. 練習詳細取得（音声再生用）
+#### 5. 練習詳細取得（音声再生用）
 ```typescript
 GET /api/teacher/practices/[speech_id]
 
@@ -478,7 +657,7 @@ Response:
 }
 ```
 
-#### 4. 講師メモ保存
+#### 6. 講師メモ保存
 ```typescript
 POST /api/teacher/notes
 
@@ -496,7 +675,7 @@ Response:
 }
 ```
 
-#### 5. クラス統計取得
+#### 7. クラス統計取得
 ```typescript
 GET /api/teacher/analytics?period=30
 
@@ -536,7 +715,7 @@ Response:
 }
 ```
 
-#### 6. アラート一覧取得
+#### 8. アラート一覧取得
 ```typescript
 GET /api/teacher/alerts?unread_only=true
 
@@ -556,7 +735,7 @@ Response:
 }
 ```
 
-#### 7. アラート既読化
+#### 9. アラート既読化
 ```typescript
 PATCH /api/teacher/alerts/[alert_id]/read
 
@@ -566,7 +745,7 @@ Response:
 }
 ```
 
-#### 8. レポート出力
+#### 10. レポート出力
 ```typescript
 GET /api/teacher/reports/weekly?format=csv&start_date=2025-11-11&end_date=2025-11-17
 
@@ -606,20 +785,24 @@ export async function middleware(request: NextRequest) {
 ### RLS（Row Level Security）ポリシー
 
 **原則**:
-1. 講師は自分に割り当てられた生徒のデータのみ閲覧可能
+1. 講師は自分が担任を務めるクラスの生徒のデータのみ閲覧可能
 2. 生徒は講師メモを見ることができない
 3. 音声データへのアクセスは署名付きURL（有効期限付き）
 
 **speeches テーブルの拡張ポリシー**:
 ```sql
--- 講師が担当生徒の練習データを閲覧可能
-CREATE POLICY "Teachers can view assigned students' speeches" ON speeches
+-- 講師が担当クラスの生徒の練習データを閲覧可能
+CREATE POLICY "Teachers can view class students' speeches" ON speeches
   FOR SELECT USING (
     user_id IN (
       SELECT student_id
-      FROM teacher_student_assignments
-      WHERE teacher_id IN (
-        SELECT id FROM teachers WHERE user_id = auth.uid()
+      FROM student_class_assignments
+      WHERE class_id IN (
+        SELECT class_id
+        FROM teacher_class_assignments
+        WHERE teacher_id IN (
+          SELECT id FROM teachers WHERE user_id = auth.uid()
+        )
       )
     )
   );
@@ -632,29 +815,42 @@ CREATE POLICY "Teachers can view assigned students' speeches" ON speeches
 async function getSignedAudioUrl(speechId: string, teacherId: string) {
   const supabase = createServerClient();
 
-  // 1. 講師が該当生徒を担当しているか確認
-  const { data: assignment } = await supabase
-    .from('teacher_student_assignments')
-    .select('student_id')
-    .eq('teacher_id', teacherId)
-    .single();
+  // 1. 講師が担当するクラスの生徒IDリストを取得
+  const { data: teacherClasses } = await supabase
+    .from('teacher_class_assignments')
+    .select('class_id')
+    .eq('teacher_id', teacherId);
 
-  if (!assignment) {
-    throw new Error('Unauthorized');
+  if (!teacherClasses || teacherClasses.length === 0) {
+    throw new Error('No assigned classes');
   }
 
-  // 2. 練習データが担当生徒のものか確認
+  const classIds = teacherClasses.map(tc => tc.class_id);
+
+  // 2. 担当クラスの生徒IDリストを取得
+  const { data: students } = await supabase
+    .from('student_class_assignments')
+    .select('student_id')
+    .in('class_id', classIds);
+
+  if (!students || students.length === 0) {
+    throw new Error('No students in assigned classes');
+  }
+
+  const studentIds = students.map(s => s.student_id);
+
+  // 3. 練習データが担当クラスの生徒のものか確認
   const { data: speech } = await supabase
     .from('speeches')
     .select('user_id, audio_path')
     .eq('id', speechId)
     .single();
 
-  if (speech.user_id !== assignment.student_id) {
-    throw new Error('Unauthorized');
+  if (!studentIds.includes(speech.user_id)) {
+    throw new Error('Unauthorized: Student not in assigned classes');
   }
 
-  // 3. 署名付きURL生成
+  // 4. 署名付きURL生成
   const { data: signedUrl } = await supabase.storage
     .from('audio-recordings')
     .createSignedUrl(speech.audio_path, 3600);  // 1時間有効
@@ -670,7 +866,15 @@ async function getSignedAudioUrl(speechId: string, teacherId: string) {
 ```
 /teacher (講師ダッシュボード TOP)
 │
-├─ /teacher/students (生徒一覧)
+├─ /teacher/classes (担当クラス一覧)
+│   │
+│   └─ /teacher/classes/[class_id]/students (クラスの生徒一覧)
+│       │
+│       └─ /teacher/students/[student_id] (生徒詳細)
+│           │
+│           └─ Modal: 練習詳細 (音声再生、メモ入力)
+│
+├─ /teacher/students (全担当生徒一覧)
 │   │
 │   └─ /teacher/students/[student_id] (生徒詳細)
 │       │
@@ -712,16 +916,31 @@ async function getSignedAudioUrl(speechId: string, teacherId: string) {
 
 ### Phase 1: 基盤構築（1週間）
 - [ ] データベーステーブル作成
-  - `teachers`, `teacher_student_assignments`, `teacher_notes`, `teacher_alerts`
-- [ ] RLSポリシー設定
+  - `teachers`: 講師情報
+  - `classes`: クラス情報
+  - `teacher_class_assignments`: 講師とクラスの紐付け
+  - `student_class_assignments`: 生徒とクラスの紐付け
+  - `teacher_notes`: 講師メモ
+  - `teacher_alerts`: 通知・アラート
+- [ ] RLSポリシー設定（全テーブル）
 - [ ] 認証・認可ミドルウェア実装
 - [ ] 講師アカウント作成フロー
+- [ ] クラス作成・管理機能
 
-### Phase 2: 生徒一覧＆詳細ビュー（1週間）
-- [ ] `/teacher/students` ページ実装
-  - 生徒一覧テーブル
+### Phase 2: クラス管理＆生徒一覧ビュー（1.5週間）
+- [ ] `/teacher/classes` ページ実装
+  - 担当クラス一覧
+  - クラス別統計表示
+  - クラス選択機能
+
+- [ ] `/teacher/classes/[class_id]/students` ページ実装
+  - クラスの生徒一覧テーブル
   - フィルタリング・ソート機能
   - ステータス表示（アクティブ/要注意/停滞）
+
+- [ ] `/teacher/students` ページ実装（全担当生徒統合ビュー）
+  - 複数クラスの生徒を統合表示
+  - クラスフィルタ機能
 
 - [ ] `/teacher/students/[student_id]` ページ実装
   - サマリー表示
