@@ -26,6 +26,16 @@ export default function LoginContent() {
   }, [router]);
 
   useEffect(() => {
+    // URLフラグメント（#以降）をチェックして、access_tokenがあれば処理
+    const hash = window.location.hash;
+    if (hash && hash.includes('access_token')) {
+      console.log('[LoginContent] URLフラグメントにaccess_tokenを検出');
+      // Supabaseクライアントに処理を任せるために、リロードせずにコールバックに転送
+      // フラグメントはサーバーに送られないため、クライアント側で処理が必要
+      router.push('/auth/callback' + hash);
+      return;
+    }
+
     // エラーパラメータをチェック
     const error = searchParams.get('error');
     if (error === 'domain_not_allowed') {
@@ -34,7 +44,7 @@ export default function LoginContent() {
 
     // すでに認証済みかチェック
     checkAuth();
-  }, [searchParams, checkAuth]);
+  }, [searchParams, checkAuth, router]);
 
   if (isChecking) {
     return (
