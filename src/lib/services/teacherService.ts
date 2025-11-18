@@ -673,3 +673,342 @@ async function getStudentInfoList(
 
   return students;
 }
+
+/**
+ * 講師のアナリティクスデータを取得
+ * @param teacherId - 講師ID
+ * @param period - 分析期間（日数、デフォルト30日）
+ */
+export async function getTeacherAnalytics(
+  teacherId: string,
+  period: number = 30
+) {
+  const supabase = await createServerClient();
+
+  // 期間の計算
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - period);
+
+  // 講師が担当するクラスIDリストを取得
+  const { data: teacherClasses } = await supabase
+    .from('teacher_class_assignments')
+    .select('class_id')
+    .eq('teacher_id', teacherId);
+
+  const classIds = teacherClasses?.map((tc: any) => tc.class_id) || [];
+
+  if (classIds.length === 0) {
+    return {
+      summary: {
+        active_rate: 0,
+        average_score: 0,
+        total_practices: 0,
+        retention_rate_7days: 0,
+        total_students: 0,
+      },
+      weekly_trend: [],
+      top_performers: [],
+      at_risk_students: [],
+      category_difficulty: [],
+    };
+  }
+
+  // 担当クラスの生徒IDリストを取得
+  const { data: studentAssignments } = await supabase
+    .from('student_class_assignments')
+    .select('student_id, class_id')
+    .in('class_id', classIds);
+
+  const studentIds = studentAssignments?.map((sa: any) => sa.student_id) || [];
+  const totalStudents = new Set(studentIds).size;
+
+  if (studentIds.length === 0) {
+    return {
+      summary: {
+        active_rate: 0,
+        average_score: 0,
+        total_practices: 0,
+        retention_rate_7days: 0,
+        total_students: 0,
+      },
+      weekly_trend: [],
+      top_performers: [],
+      at_risk_students: [],
+      category_difficulty: [],
+    };
+  }
+
+  // 期間内の全練習データを取得
+  const { data: practices } = await supabase
+    .from('speeches')
+    .select('id, user_id, feedback, created_at, topics(category)')
+    .in('user_id', studentIds)
+    .gte('created_at', startDate.toISOString());
+
+  const totalPractices = practices?.length || 0;
+
+  // 平均スコア計算
+  const scores = practices
+    ?.map((p: any) => {
+      try {
+        const feedback =
+          typeof p.feedback === 'string' ? JSON.parse(p.feedback) : p.feedback;
+        return feedback?.score || 0;
+      } catch {
+        return 0;
+      }
+    })
+    .filter((score: number) => score > 0);
+
+  const averageScore =
+    scores && scores.length > 0
+      ? scores.reduce((sum: number, score: number) => sum + score, 0) /
+        scores.length
+      : 0;
+
+  // アクティブ率（過去3日以内に練習した生徒）
+  const threeDaysAgo = new Date();
+  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+  const { data: recentPractices } = await supabase
+    .from('speeches')
+    .select('user_id')
+    .in('user_id', studentIds)
+    .gte('created_at', threeDaysAgo.toISOString());
+
+  const activeStudents = new Set(
+    recentPractices?.map((p: any) => p.user_id) || []
+  ).size;
+  const activeRate = totalStudents > 0 ? activeStudents / totalStudents : 0;
+
+  // 7日間継続率
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const { data: weekPractices } = await supabase
+    .from('speeches')
+    .select('user_id')
+    .in('user_id', studentIds)
+    .gte('created_at', sevenDaysAgo.toISOString());
+
+  const retainedStudents = new Set(
+    weekPractices?.map((p: any) => p.user_id) || []
+  ).size;
+  const retentionRate7days =
+    totalStudents > 0 ? retainedStudents / totalStudents : 0;
+
+  // 週別練習回数推移（直近5週間）
+  const weeklyTrend = [];
+  for (let i = 4; i >= 0; i--) {
+    const weekEnd = new Date();
+    weekEnd.setDate(weekEnd.getDate() - i * 7);
+    const weekStart = new Date(weekEnd);
+    weekStart.setDate(weekStart.getDate() - 7);
+
+    const { data: weekData } = await supabase
+      .from('speeches')
+      .select('id')
+      .in('user_id', studentIds)
+      .gte('created_at', weekStart.toISOString())
+      .lt('created_at', weekEnd.toISOString());
+
+    weeklyTrend.push({
+      week: `W${5 - i}`,
+      practice_count: weekData?.length || 0,
+    });
+  }
+
+  // トップパフォーマー（今週）
+  const thisWeekStart = new Date();
+  thisWeekStart.setDate(thisWeekStart.getDate() - 7);
+
+  const { data: thisWeekPractices } = await supabase
+    .from('speeches')
+    .select('user_id, feedback')
+    .in('user_id', studentIds)
+    .gte('created_at', thisWeekStart.toISOString());
+
+  // 生徒ごとの今週の統計を計算
+  const studentWeekStats = new Map<
+    string,
+    { count: number; scores: number[] }
+  >();
+
+  thisWeekPractices?.forEach((p: any) => {
+    if (!studentWeekStats.has(p.user_id)) {
+      studentWeekStats.set(p.user_id, { count: 0, scores: [] });
+    }
+    const stats = studentWeekStats.get(p.user_id)!;
+    stats.count++;
+
+    try {
+      const feedback =
+        typeof p.feedback === 'string' ? JSON.parse(p.feedback) : p.feedback;
+      if (feedback?.score) {
+        stats.scores.push(feedback.score);
+      }
+    } catch {
+      // Skip invalid feedback
+    }
+  });
+
+  // ユーザー情報を取得
+  const { data: users } = await supabase
+    .from('users')
+    .select('id, display_name, email')
+    .in('id', Array.from(studentWeekStats.keys()));
+
+  const topPerformers = Array.from(studentWeekStats.entries())
+    .map(([userId, stats]) => {
+      const user = users?.find((u: any) => u.id === userId);
+      const avgScore =
+        stats.scores.length > 0
+          ? stats.scores.reduce((sum, score) => sum + score, 0) /
+            stats.scores.length
+          : 0;
+
+      return {
+        student_id: userId,
+        student_name: user?.display_name || user?.email?.split('@')[0] || '',
+        practice_count: stats.count,
+        average_score: avgScore,
+      };
+    })
+    .filter((p) => p.practice_count > 0)
+    .sort((a, b) => {
+      if (b.practice_count !== a.practice_count) {
+        return b.practice_count - a.practice_count;
+      }
+      return b.average_score - a.average_score;
+    })
+    .slice(0, 5);
+
+  // 要注意生徒（7日以上練習していない）
+  const { data: allStudents } = await supabase
+    .from('users')
+    .select('id, display_name, email')
+    .in('id', studentIds);
+
+  const { data: streaks } = await supabase
+    .from('user_streaks')
+    .select('user_id, last_practice_date')
+    .in('user_id', studentIds);
+
+  const atRiskStudents = [];
+  const now = new Date();
+
+  for (const student of allStudents || []) {
+    const streak = streaks?.find((s: any) => s.user_id === student.id);
+    if (!streak || !streak.last_practice_date) {
+      // 一度も練習していない
+      atRiskStudents.push({
+        student_id: student.id,
+        student_name:
+          student.display_name || student.email?.split('@')[0] || '',
+        days_since_last_practice: 999,
+        average_score: 0,
+      });
+      continue;
+    }
+
+    const lastPractice = new Date(streak.last_practice_date);
+    const daysSince = Math.floor(
+      (now.getTime() - lastPractice.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (daysSince >= 7) {
+      // 生徒の平均スコアを取得
+      const { data: studentPractices } = await supabase
+        .from('speeches')
+        .select('feedback')
+        .eq('user_id', student.id)
+        .limit(10)
+        .order('created_at', { ascending: false });
+
+      const studentScores = studentPractices
+        ?.map((p: any) => {
+          try {
+            const feedback =
+              typeof p.feedback === 'string'
+                ? JSON.parse(p.feedback)
+                : p.feedback;
+            return feedback?.score || 0;
+          } catch {
+            return 0;
+          }
+        })
+        .filter((score: number) => score > 0);
+
+      const avgScore =
+        studentScores && studentScores.length > 0
+          ? studentScores.reduce(
+              (sum: number, score: number) => sum + score,
+              0
+            ) / studentScores.length
+          : 0;
+
+      atRiskStudents.push({
+        student_id: student.id,
+        student_name:
+          student.display_name || student.email?.split('@')[0] || '',
+        days_since_last_practice: daysSince,
+        average_score: avgScore,
+      });
+    }
+  }
+
+  // 日数でソート
+  atRiskStudents.sort(
+    (a, b) => b.days_since_last_practice - a.days_since_last_practice
+  );
+
+  // カテゴリ別難易度分析
+  const categoryScores = new Map<string, number[]>();
+
+  practices?.forEach((p: any) => {
+    const category = p.topics?.category || 'その他';
+    try {
+      const feedback =
+        typeof p.feedback === 'string' ? JSON.parse(p.feedback) : p.feedback;
+      if (feedback?.score) {
+        if (!categoryScores.has(category)) {
+          categoryScores.set(category, []);
+        }
+        categoryScores.get(category)!.push(feedback.score);
+      }
+    } catch {
+      // Skip invalid feedback
+    }
+  });
+
+  const categoryDifficulty = Array.from(categoryScores.entries())
+    .map(([category, scores]) => {
+      const avgScore =
+        scores.reduce((sum, score) => sum + score, 0) / scores.length;
+      let difficulty: 'easy' | 'medium' | 'hard' = 'medium';
+      if (avgScore >= 80) difficulty = 'easy';
+      else if (avgScore < 70) difficulty = 'hard';
+
+      return {
+        category,
+        average_score: avgScore,
+        difficulty,
+        practice_count: scores.length,
+      };
+    })
+    .sort((a, b) => b.average_score - a.average_score);
+
+  return {
+    summary: {
+      active_rate: activeRate,
+      average_score: averageScore,
+      total_practices: totalPractices,
+      retention_rate_7days: retentionRate7days,
+      total_students: totalStudents,
+    },
+    weekly_trend: weeklyTrend,
+    top_performers: topPerformers,
+    at_risk_students: atRiskStudents.slice(0, 10),
+    category_difficulty: categoryDifficulty,
+  };
+}
