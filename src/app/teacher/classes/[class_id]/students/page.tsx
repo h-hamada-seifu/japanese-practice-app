@@ -1,4 +1,5 @@
 import TeacherLayout from '@/components/teacher/TeacherLayout';
+import ExportCSVButton from '@/components/teacher/ExportCSVButton';
 import {
   getCurrentTeacher,
   getClassStudents,
@@ -79,14 +80,7 @@ export default async function ClassStudentsPage({ params }: Props) {
               {classInfo.code && `コード: ${classInfo.code}`}
             </p>
           </div>
-          <div className="flex gap-2">
-            <button className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-              CSV出力
-            </button>
-            <button className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-              PDF出力
-            </button>
-          </div>
+          <ExportCSVButton students={students} className={classInfo.name} />
         </div>
 
         {/* クラス概要 */}

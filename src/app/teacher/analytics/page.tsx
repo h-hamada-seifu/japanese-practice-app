@@ -1,5 +1,6 @@
 import TeacherLayout from '@/components/teacher/TeacherLayout';
 import WeeklyTrendChart from '@/components/teacher/WeeklyTrendChart';
+import ExportAnalyticsCSVButton from '@/components/teacher/ExportAnalyticsCSVButton';
 import {
   getCurrentTeacher,
   getTeacherAnalytics,
@@ -24,11 +25,14 @@ export default async function AnalyticsPage() {
     <TeacherLayout teacherName={teacher.name}>
       <div className="space-y-6">
         {/* ヘッダー */}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">📊 統計分析</h1>
-          <p className="text-sm text-gray-600 mt-1">
-            直近30日間のクラス全体の練習状況を分析
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">📊 統計分析</h1>
+            <p className="text-sm text-gray-600 mt-1">
+              直近30日間のクラス全体の練習状況を分析
+            </p>
+          </div>
+          <ExportAnalyticsCSVButton analytics={analytics} />
         </div>
 
         {/* 主要指標サマリー */}

@@ -1,4 +1,5 @@
 import TeacherLayout from '@/components/teacher/TeacherLayout';
+import ExportCSVButton from '@/components/teacher/ExportCSVButton';
 import {
   getCurrentTeacher,
   getAllTeacherStudents,
@@ -83,9 +84,7 @@ export default async function AllStudentsPage({ searchParams }: Props) {
                 : '全クラスの生徒を表示'}
             </p>
           </div>
-          <button className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-            CSV出力
-          </button>
+          <ExportCSVButton students={filteredStudents} />
         </div>
 
         {/* サマリーカード */}
