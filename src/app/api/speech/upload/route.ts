@@ -5,6 +5,7 @@ import { generateFeedback } from '@/lib/services/feedbackGenerator';
 import { randomUUID } from 'crypto';
 import { Json } from '@/types/database';
 import { cookies } from 'next/headers';
+import { updateStreak } from '@/lib/services/streakService';
 
 /**
  * POST /api/speech/upload
@@ -155,7 +156,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 5. レスポンスを返す
+    // 5. ストリークを更新
+    try {
+      await updateStreak(user.id);
+    } catch (error) {
+      // ストリーク更新のエラーは致命的ではないのでログのみ
+      console.error('Streak update error:', error);
+    }
+
+    // 6. レスポンスを返す
     return NextResponse.json(
       {
         speechId: speechRecord.id,

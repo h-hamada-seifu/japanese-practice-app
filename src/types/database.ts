@@ -24,6 +24,11 @@ export interface Database {
         Insert: SpeechesInsert;
         Update: SpeechesUpdate;
       };
+      user_streaks: {
+        Row: UserStreaksRow;
+        Insert: UserStreaksInsert;
+        Update: UserStreaksUpdate;
+      };
     };
   };
 }
@@ -128,4 +133,35 @@ export interface SpeechesUpdate {
   feedback?: Json;
   duration?: number | null;
   created_at?: string;
+}
+
+// User Streaks table types
+export interface UserStreaksRow {
+  user_id: string;
+  current_streak: number;
+  longest_streak: number;
+  last_practice_date: string;
+  total_practice_days: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserStreaksInsert {
+  user_id: string;
+  current_streak?: number;
+  longest_streak?: number;
+  last_practice_date?: string;
+  total_practice_days?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface UserStreaksUpdate {
+  user_id?: string;
+  current_streak?: number;
+  longest_streak?: number;
+  last_practice_date?: string;
+  total_practice_days?: number;
+  created_at?: string;
+  updated_at?: string;
 }
