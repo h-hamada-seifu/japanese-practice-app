@@ -29,6 +29,36 @@ export interface Database {
         Insert: UserStreaksInsert;
         Update: UserStreaksUpdate;
       };
+      teachers: {
+        Row: TeachersRow;
+        Insert: TeachersInsert;
+        Update: TeachersUpdate;
+      };
+      classes: {
+        Row: ClassesRow;
+        Insert: ClassesInsert;
+        Update: ClassesUpdate;
+      };
+      teacher_class_assignments: {
+        Row: TeacherClassAssignmentsRow;
+        Insert: TeacherClassAssignmentsInsert;
+        Update: TeacherClassAssignmentsUpdate;
+      };
+      student_class_assignments: {
+        Row: StudentClassAssignmentsRow;
+        Insert: StudentClassAssignmentsInsert;
+        Update: StudentClassAssignmentsUpdate;
+      };
+      teacher_notes: {
+        Row: TeacherNotesRow;
+        Insert: TeacherNotesInsert;
+        Update: TeacherNotesUpdate;
+      };
+      teacher_alerts: {
+        Row: TeacherAlertsRow;
+        Insert: TeacherAlertsInsert;
+        Update: TeacherAlertsUpdate;
+      };
     };
   };
 }
@@ -164,4 +194,193 @@ export interface UserStreaksUpdate {
   total_practice_days?: number;
   created_at?: string;
   updated_at?: string;
+}
+
+// Teachers table types
+export interface TeachersRow {
+  id: string;
+  user_id: string;
+  name: string;
+  email: string;
+  department: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TeachersInsert {
+  id?: string;
+  user_id: string;
+  name: string;
+  email: string;
+  department?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface TeachersUpdate {
+  id?: string;
+  user_id?: string;
+  name?: string;
+  email?: string;
+  department?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Classes table types
+export interface ClassesRow {
+  id: string;
+  name: string;
+  code: string | null;
+  description: string | null;
+  academic_year: string | null;
+  semester: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ClassesInsert {
+  id?: string;
+  name: string;
+  code?: string | null;
+  description?: string | null;
+  academic_year?: string | null;
+  semester?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface ClassesUpdate {
+  id?: string;
+  name?: string;
+  code?: string | null;
+  description?: string | null;
+  academic_year?: string | null;
+  semester?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Teacher Class Assignments table types
+export interface TeacherClassAssignmentsRow {
+  id: string;
+  teacher_id: string;
+  class_id: string;
+  role: string;
+  assigned_at: string;
+  assigned_by: string | null;
+}
+
+export interface TeacherClassAssignmentsInsert {
+  id?: string;
+  teacher_id: string;
+  class_id: string;
+  role?: string;
+  assigned_at?: string;
+  assigned_by?: string | null;
+}
+
+export interface TeacherClassAssignmentsUpdate {
+  id?: string;
+  teacher_id?: string;
+  class_id?: string;
+  role?: string;
+  assigned_at?: string;
+  assigned_by?: string | null;
+}
+
+// Student Class Assignments table types
+export interface StudentClassAssignmentsRow {
+  id: string;
+  student_id: string;
+  class_id: string;
+  enrolled_at: string;
+  status: string;
+}
+
+export interface StudentClassAssignmentsInsert {
+  id?: string;
+  student_id: string;
+  class_id: string;
+  enrolled_at?: string;
+  status?: string;
+}
+
+export interface StudentClassAssignmentsUpdate {
+  id?: string;
+  student_id?: string;
+  class_id?: string;
+  enrolled_at?: string;
+  status?: string;
+}
+
+// Teacher Notes table types
+export interface TeacherNotesRow {
+  id: string;
+  teacher_id: string;
+  student_id: string;
+  speech_id: string;
+  note: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TeacherNotesInsert {
+  id?: string;
+  teacher_id: string;
+  student_id: string;
+  speech_id: string;
+  note: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface TeacherNotesUpdate {
+  id?: string;
+  teacher_id?: string;
+  student_id?: string;
+  speech_id?: string;
+  note?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Teacher Alerts table types
+export interface TeacherAlertsRow {
+  id: string;
+  teacher_id: string;
+  student_id: string;
+  alert_type: string;
+  message: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface TeacherAlertsInsert {
+  id?: string;
+  teacher_id: string;
+  student_id: string;
+  alert_type: string;
+  message: string;
+  is_read?: boolean;
+  created_at?: string;
+}
+
+export interface TeacherAlertsUpdate {
+  id?: string;
+  teacher_id?: string;
+  student_id?: string;
+  alert_type?: string;
+  message?: string;
+  is_read?: boolean;
+  created_at?: string;
 }

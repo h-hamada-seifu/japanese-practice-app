@@ -52,6 +52,31 @@ export async function middleware(request: NextRequest) {
 
   console.log('[Middleware] User:', user ? user.email : 'なし');
 
+  // 講師ルートの認証チェック
+  if (request.nextUrl.pathname.startsWith('/teacher')) {
+    console.log('[Middleware] 講師ルートへのアクセス検出');
+
+    if (!user) {
+      console.log('[Middleware] 未認証ユーザー - ログインページへリダイレクト');
+      const redirectUrl = new URL('/auth/login', request.url);
+      redirectUrl.searchParams.set('redirect', request.nextUrl.pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    // ユーザーのロールを確認
+    const role = user.user_metadata?.role;
+    console.log('[Middleware] ユーザーロール:', role);
+
+    if (role !== 'teacher' && role !== 'admin') {
+      console.log(
+        '[Middleware] 講師権限なし - 生徒ダッシュボードへリダイレクト'
+      );
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+
+    console.log('[Middleware] 講師権限確認完了');
+  }
+
   return supabaseResponse;
 }
 
