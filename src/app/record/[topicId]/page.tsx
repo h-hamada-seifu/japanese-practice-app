@@ -205,18 +205,22 @@ export default function RecordPage() {
             話題一覧に戻る
           </button>
 
-          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
-              {topic.title}
-            </h1>
-            {topic.description && (
-              <p className="text-sm sm:text-base text-gray-600 mb-3">
-                {topic.description}
-              </p>
-            )}
-            <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs sm:text-sm font-medium rounded-full">
-              対象レベル: {topic.target_level}
-            </span>
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                  {topic.title}
+                </h1>
+                {topic.description && (
+                  <p className="text-gray-600 mb-3">{topic.description}</p>
+                )}
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
+                    レベル: {topic.target_level}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
